@@ -1,5 +1,5 @@
 /**
- * Frontend script to handle Early Bird signup form submission.
+ * Frontend script to handle signup form submission.
  * Dynamically gathers name, email, phone, and WhatsApp fields based on layout configurations.
  * Handles AJAX requests, local validation, and success screen animations.
  * Supports multiple instances on the same page by using context-specific class selectors.
@@ -7,19 +7,21 @@
 jQuery(document).ready(function($) {
 
     // Refresh nonce dynamically on page load to bypass caching plugins
-    $.ajax({
-        url: kd_eb_vars.ajax_url,
-        type: 'POST',
-        dataType: 'json',
-        data: {
-            action: 'kd_refresh_signup_nonce'
-        },
-        success: function(response) {
-            if (response && response.success && response.data.nonce) {
-                kd_eb_vars.nonce = response.data.nonce;
+    if (typeof kdwn_vars !== 'undefined') {
+        $.ajax({
+            url: kdwn_vars.ajax_url,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                action: 'kdwn_refresh_signup_nonce'
+            },
+            success: function(response) {
+                if (response && response.success && response.data.nonce) {
+                    kdwn_vars.nonce = response.data.nonce;
+                }
             }
-        }
-    });
+        });
+    }
 
     // Handle delegated form submission to support multiple forms on the same page
     $(document).on('submit', '.kd-signup-form', function(e) {
@@ -34,8 +36,8 @@ jQuery(document).ready(function($) {
         var $successText = $card.find('.kd-success-message-text');
 
         /** Prevent runtime execution errors if the localization object is not populated on the page */
-        if (typeof kd_eb_vars === 'undefined') {
-            kd_show_message($messageBox, 'System configuration error. Please refresh the page and try again.', 'error');
+        if (typeof kdwn_vars === 'undefined') {
+            kdwn_show_message($messageBox, 'System configuration error. Please refresh the page and try again.', 'error');
             return;
         }
 
@@ -82,7 +84,7 @@ jQuery(document).ready(function($) {
             whatsapp = whatsapp.replace(/\s+/g, '');
             // Check selected country code
             var whatsappCode = $form.find('select[name="whatsapp_country_code"]').val() || '';
-            var cleanWhatsappCode = whatsappCode.replace(/\D/g, '');
+            var cleanPattern = whatsappCode.replace(/\D/g, '');
             
             var cleanWhatsapp = whatsapp.replace(/\D/g, '');
             
@@ -90,7 +92,7 @@ jQuery(document).ready(function($) {
             // we should not prefix it again.
             if (whatsapp.indexOf('+') === 0) {
                 // Keep it as-is
-            } else if (cleanWhatsappCode && cleanWhatsapp.indexOf(cleanWhatsappCode) === 0) {
+            } else if (cleanPattern && cleanWhatsapp.indexOf(cleanPattern) === 0) {
                 whatsapp = '+' + cleanWhatsapp;
             } else {
                 whatsapp = whatsapp.replace(/^0+/, '');
@@ -122,7 +124,7 @@ jQuery(document).ready(function($) {
         }
 
         if (validationError) {
-            kd_show_message($messageBox, validationError, 'error');
+            kdwn_show_message($messageBox, validationError, 'error');
             return;
         }
 
@@ -130,25 +132,25 @@ jQuery(document).ready(function($) {
         $messageBox.hide().removeClass('kd-success kd-error').html('');
         $submitBtn.addClass('kd-loading').prop('disabled', true);
 
-        var $serviceField = $form.find('input[name="kd_service_id"]');
+        var $serviceField = $form.find('input[name="kdwn_service_id"]');
         var serviceId = $serviceField.length ? parseInt($serviceField.val(), 10) : 1;
         var isConsentChecked = $form.find('.kd-consent-checkbox').is(':checked') ? '1' : '0';
 
         // Submit registration data
         $.ajax({
-            url: kd_eb_vars.ajax_url,
+            url: kdwn_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_early_bird_signup',
-                nonce: kd_eb_vars.nonce,
+                action: 'kdwn_signup',
+                nonce: kdwn_vars.nonce,
                 name: name,
                 email: email,
                 phone: phone,
                 whatsapp: whatsapp,
                 service_id: serviceId,
-                kd_hp_email: hpEmail,
-                kd_notification_consent: isConsentChecked
+                kdwn_hp_email: hpEmail,
+                kdwn_notification_consent: isConsentChecked
             },
             success: function(response) {
                 if (response && response.success) {
@@ -163,11 +165,11 @@ jQuery(document).ready(function($) {
                     var errorMsg = (response && response.data && response.data.message) 
                         ? response.data.message 
                         : 'An error occurred. Please try again.';
-                    kd_show_message($messageBox, errorMsg, 'error');
+                    kdwn_show_message($messageBox, errorMsg, 'error');
                 }
             },
             error: function() {
-                kd_show_message($messageBox, 'Connection error. Please check your internet connection.', 'error');
+                kdwn_show_message($messageBox, 'Connection error. Please check your internet connection.', 'error');
             },
             complete: function() {
                 $submitBtn.removeClass('kd-loading').prop('disabled', false);
@@ -178,7 +180,7 @@ jQuery(document).ready(function($) {
     /**
      * Helper to show messages inside the response box with inline SVGs (used for error alerts).
      */
-    function kd_show_message($box, text, type) {
+    function kdwn_show_message($box, text, type) {
         var iconHtml = '';
         
         if (type === 'success') {

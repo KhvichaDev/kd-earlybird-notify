@@ -1,5 +1,5 @@
 /**
- * Stylesheet for the Early Bird registration signup form.
+ * Stylesheet for the waitlist registration signup form.
  * Implements a modern premium dark card with high-end SaaS gradients,
  * in-field floating labels, custom fonts, and animated button interactions.
  * Also includes styles and animations for the vector success screen.
@@ -205,7 +205,7 @@
     border: 3px solid rgba(255, 255, 255, 0.25);
     border-radius: 50%;
     border-top-color: #ffffff;
-    animation: kd_spin 0.6s linear infinite;
+    animation: kdwn_spin 0.6s linear infinite;
     position: absolute;
 }
 
@@ -218,7 +218,7 @@
     display: block;
 }
 
-@keyframes kd_spin {
+@keyframes kdwn_spin {
     to { transform: rotate(360deg); }
 }
 
@@ -232,7 +232,7 @@
     align-items: center !important;
     gap: 10px !important;
     font-weight: 500 !important;
-    animation: kd_fade_in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: kdwn_fade_in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .kd-message.kd-success {
@@ -263,7 +263,7 @@
     align-items: center;
     text-align: center;
     padding: 1rem 0;
-    animation: kd_fade_in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: kdwn_fade_in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .kd-success-icon-box {
@@ -283,8 +283,8 @@
     stroke: #10b981;
     stroke-miterlimit: 10;
     box-shadow: inset 0px 0px 0px rgba(16, 185, 129, 0);
-    animation: kd_checkmark_fill .4s ease-in-out .4s forwards, 
-               kd_checkmark_scale .3s ease-in-out 0s both;
+    animation: kdwn_checkmark_fill .4s ease-in-out .4s forwards, 
+               kdwn_checkmark_scale .3s ease-in-out 0s both;
 }
 
 .kd-checkmark-circle {
@@ -294,7 +294,7 @@
     stroke-miterlimit: 10;
     stroke: #10b981;
     fill: none;
-    animation: kd_stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    animation: kdwn_stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
 .kd-checkmark-check {
@@ -302,19 +302,19 @@
     stroke-dasharray: 48;
     stroke-dashoffset: 48;
     stroke: #10b981;
-    animation: kd_stroke 0.35s cubic-bezier(0.65, 0, 0.45, 1) 0.55s forwards;
+    animation: kdwn_stroke 0.35s cubic-bezier(0.65, 0, 0.45, 1) 0.55s forwards;
 }
 
-@keyframes kd_stroke {
+@keyframes kdwn_stroke {
     100% { stroke-dashoffset: 0; }
 }
 
-@keyframes kd_checkmark_scale {
+@keyframes kdwn_checkmark_scale {
     0%, 100% { transform: none; }
     50% { transform: scale3d(1.15, 1.15, 1); }
 }
 
-@keyframes kd_checkmark_fill {
+@keyframes kdwn_checkmark_fill {
     100% { box-shadow: inset 0px 0px 0px 40px rgba(16, 185, 129, 0.1); }
 }
 
@@ -339,7 +339,7 @@
     max-width: 320px;
 }
 
-@keyframes kd_fade_in {
+@keyframes kdwn_fade_in {
     from {
         opacity: 0;
         transform: translateY(10px);
@@ -534,11 +534,11 @@
     border: 2px solid #34d399 !important;
     border-radius: 50% !important;
     position: absolute !important;
-    animation: kd_pulse_expand 1.8s infinite cubic-bezier(0.25, 0, 0, 1) !important;
+    animation: kdwn_pulse_expand 1.8s infinite cubic-bezier(0.25, 0, 0, 1) !important;
     opacity: 0 !important;
 }
 
-@keyframes kd_pulse_expand {
+@keyframes kdwn_pulse_expand {
     0% {
         transform: scale(0.5);
         opacity: 0.8;

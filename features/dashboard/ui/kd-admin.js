@@ -55,12 +55,12 @@ jQuery(document).ready(function($) {
             $btn.prop('disabled', true).text('Deleting...');
 
             $.ajax({
-                url: kd_admin_vars.ajax_url,
+                url: kdwn_admin_vars.ajax_url,
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    action: 'kd_delete_subscriber',
-                    nonce: kd_admin_vars.nonce,
+                    action: 'kdwn_delete_subscriber',
+                    nonce: kdwn_admin_vars.nonce,
                     id: id
                 },
                 success: function(response) {
@@ -81,7 +81,7 @@ jQuery(document).ready(function($) {
                             }
                         });
                         
-                        kd_update_stats_display(-1, status);
+                        kdwn_update_stats_display(-1, status);
                     } else {
                         KDNotification.show({
                             type: "error",
@@ -125,12 +125,12 @@ jQuery(document).ready(function($) {
             $btn.prop('disabled', true).text('Resetting...');
 
             $.ajax({
-                url: kd_admin_vars.ajax_url,
+                url: kdwn_admin_vars.ajax_url,
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    action: 'kd_reset_subscribers_status',
-                    nonce: kd_admin_vars.nonce,
+                    action: 'kdwn_reset_subscribers_status',
+                    nonce: kdwn_admin_vars.nonce,
                     service_id: activeServiceId
                 },
                 success: function(response) {
@@ -270,7 +270,7 @@ jQuery(document).ready(function($) {
     var currentSubId = 0;
     var currentSubNumber = '';
     var currentSubMessage = '';
-    var kd_skipped_sub_ids = [];
+    var kdwn_skipped_sub_ids = [];
 
     $campaignForm.on('submit', function(e) {
         e.preventDefault();
@@ -310,12 +310,12 @@ jQuery(document).ready(function($) {
             if (channel.includes('manual')) {
                 $autoView.hide();
                 $manualView.show();
-                kd_skipped_sub_ids = []; // Reset skipped tracker
-                kd_load_manual_stats();
+                kdwn_skipped_sub_ids = []; // Reset skipped tracker
+                kdwn_load_manual_stats();
             } else {
                 $manualView.hide();
                 $autoView.show();
-                kd_load_auto_stats();
+                kdwn_load_auto_stats();
             }
 
             $modal.fadeIn(200);
@@ -325,7 +325,7 @@ jQuery(document).ready(function($) {
     /**
      * Stats load for automated campaign
      */
-    function kd_load_auto_stats() {
+    function kdwn_load_auto_stats() {
         $logBody.html('<p class="kd-log-info">Querying subscribers database...</p>');
         $progressBar.css('width', '0%');
         $progressPct.text('0%');
@@ -334,12 +334,12 @@ jQuery(document).ready(function($) {
         totalProcessedSoFar = 0;
 
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_get_campaign_stats',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_get_campaign_stats',
+                nonce: kdwn_admin_vars.nonce,
                 channel: channel,
                 service_id: activeServiceId
             },
@@ -356,7 +356,7 @@ jQuery(document).ready(function($) {
                     $logBody.append('<p class="kd-log-info">Found ' + totalToNotify + ' subscribers to notify. Starting batch queue...</p>');
                     $progressRatio.text('0 / ' + totalToNotify);
 
-                    kd_send_next_batch();
+                    kdwn_send_next_batch();
                 } else {
                     $logBody.append('<p class="kd-log-error">Could not retrieve stats: ' + (response.data.message || 'Unknown error') + '</p>');
                     $closeModalBtn.show();
@@ -372,7 +372,7 @@ jQuery(document).ready(function($) {
     /**
      * Stats load for manual campaign queue
      */
-    function kd_load_manual_stats() {
+    function kdwn_load_manual_stats() {
         $('#kd-manual-sub-name').text('Loading next subscriber...');
         $('#kd-manual-sub-number').text('—');
         $('#kd-manual-message-preview').text('—');
@@ -381,12 +381,12 @@ jQuery(document).ready(function($) {
         totalNotifiedSoFar = 0;
 
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_get_campaign_stats',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_get_campaign_stats',
+                nonce: kdwn_admin_vars.nonce,
                 channel: channel,
                 service_id: activeServiceId
             },
@@ -403,7 +403,7 @@ jQuery(document).ready(function($) {
                     }
 
                     $('#kd-manual-progress-ratio').text(totalToNotify + ' remaining');
-                    kd_load_next_manual_subscriber();
+                    kdwn_load_next_manual_subscriber();
                 } else {
                     KDNotification.show({
                         type: "error",
@@ -429,19 +429,19 @@ jQuery(document).ready(function($) {
     /**
      * Load the next pending subscriber details in manual queue
      */
-    function kd_load_next_manual_subscriber() {
+    function kdwn_load_next_manual_subscriber() {
         $('#kd-manual-send-btn, #kd-manual-skip-btn, #kd-manual-mark-btn').prop('disabled', true);
         
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_get_next_pending_subscriber',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_get_next_pending_subscriber',
+                nonce: kdwn_admin_vars.nonce,
                 channel: channel,
                 service_id: activeServiceId,
-                exclude_ids: kd_skipped_sub_ids
+                exclude_ids: kdwn_skipped_sub_ids
             },
             success: function(response) {
                 if (response && response.success) {
@@ -454,7 +454,7 @@ jQuery(document).ready(function($) {
                         $('#kd-manual-progress-ratio').text('0 remaining');
                         
                         $closeModalBtn.show();
-                        kd_refresh_ui_counters(totalNotifiedSoFar, totalNotifiedSoFar, 0);
+                        kdwn_refresh_ui_counters(totalNotifiedSoFar, totalNotifiedSoFar, 0);
                     } else {
                         currentSubId = data.id;
                         currentSubNumber = (channel === 'manual_whatsapp' || channel === 'manual_whatsapp_app') ? data.whatsapp : data.phone;
@@ -498,14 +498,14 @@ jQuery(document).ready(function($) {
     /**
      * Recursively sends campaign notifications in chunks.
      */
-    function kd_send_next_batch() {
+    function kdwn_send_next_batch() {
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_send_batch_emails',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_send_batch_emails',
+                nonce: kdwn_admin_vars.nonce,
                 channel: channel,
                 subject: subject,
                 message: message,
@@ -564,20 +564,20 @@ jQuery(document).ready(function($) {
                         $closeModalBtn.show();
 
                         // Refresh local stats indicators on screen
-                        kd_refresh_ui_counters(totalProcessedSoFar, totalNotifiedSoFar, totalProcessedSoFar - totalNotifiedSoFar);
+                        kdwn_refresh_ui_counters(totalProcessedSoFar, totalNotifiedSoFar, totalProcessedSoFar - totalNotifiedSoFar);
                     } else {
-                        kd_send_next_batch();
+                        kdwn_send_next_batch();
                     }
                 } else {
                     $logBody.append('<p class="kd-log-error">Batch error: ' + (response.data.message || 'Unknown error') + '. Retrying in 2 seconds...</p>');
                     $logBody.scrollTop($logBody[0].scrollHeight);
-                    setTimeout(kd_send_next_batch, 2000);
+                    setTimeout(kdwn_send_next_batch, 2000);
                 }
             },
             error: function() {
                 $logBody.append('<p class="kd-log-error">Connection timeout. Retrying batch in 3 seconds...</p>');
                 $logBody.scrollTop($logBody[0].scrollHeight);
-                setTimeout(kd_send_next_batch, 3000);
+                setTimeout(kdwn_send_next_batch, 3000);
             }
         });
     }
@@ -616,7 +616,7 @@ jQuery(document).ready(function($) {
             /** Strip formatting characters to comply with WhatsApp Web API rules */
             var cleanNumber = currentSubNumber.replace(/\D/g, '');
             link = "https://web.whatsapp.com/send?phone=" + cleanNumber + "&text=" + encodeURIComponent(currentSubMessage);
-            windowName = 'kd_whatsapp_send_popup';
+            windowName = 'kdwn_whatsapp_send_popup';
             windowFeatures = 'width=950,height=750,status=no,titlebar=no,menubar=no,resizable=yes,scrollbars=yes';
             window.open(link, windowName, windowFeatures);
         } else if (channel === 'manual_whatsapp_app') {
@@ -629,31 +629,31 @@ jQuery(document).ready(function($) {
 
     // Mark as notified without opening app
     $('#kd-manual-mark-btn').on('click', function() {
-        kd_mark_current_subscriber_notified();
+        kdwn_mark_current_subscriber_notified();
     });
 
     // Skip current subscriber
     $('#kd-manual-skip-btn').on('click', function() {
         // Exclude this subscriber ID from the next query
         if (currentSubId) {
-            kd_skipped_sub_ids.push(currentSubId);
+            kdwn_skipped_sub_ids.push(currentSubId);
         }
-        kd_load_next_manual_subscriber();
+        kdwn_load_next_manual_subscriber();
     });
 
     /**
      * AJAX utility to mark active manual subscriber notified.
      */
-    function kd_mark_current_subscriber_notified() {
+    function kdwn_mark_current_subscriber_notified() {
         $('#kd-manual-send-btn, #kd-manual-skip-btn, #kd-manual-mark-btn').prop('disabled', true);
 
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_mark_subscriber_notified',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_mark_subscriber_notified',
+                nonce: kdwn_admin_vars.nonce,
                 id: currentSubId
             },
             success: function(response) {
@@ -668,7 +668,7 @@ jQuery(document).ready(function($) {
                     }
 
                     totalNotifiedSoFar++;
-                    kd_load_next_manual_subscriber();
+                    kdwn_load_next_manual_subscriber();
                 } else {
                     KDNotification.show({
                         type: "error",
@@ -695,26 +695,26 @@ jQuery(document).ready(function($) {
     var $copyStatus = $('#kd-copy-status-msg');
 
     $('#kd-copy-phones-btn').on('click', function() {
-        kd_copy_channel_contacts('phone');
+        kdwn_copy_channel_contacts('phone');
     });
 
     $('#kd-copy-was-btn').on('click', function() {
-        kd_copy_channel_contacts('whatsapp');
+        kdwn_copy_channel_contacts('whatsapp');
     });
 
-    function kd_copy_channel_contacts(channelKey) {
+    function kdwn_copy_channel_contacts(channelKey) {
         var $btn = channelKey === 'whatsapp' ? $('#kd-copy-was-btn') : $('#kd-copy-phones-btn');
         var originalHtml = $btn.html();
 
         $btn.prop('disabled', true).text('Fetching numbers...');
 
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_get_active_contacts',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_get_active_contacts',
+                nonce: kdwn_admin_vars.nonce,
                 channel: channelKey,
                 service_id: activeServiceId
             },
@@ -754,7 +754,7 @@ jQuery(document).ready(function($) {
         });
     }
 
-    function kd_toggle_reset_button_visibility() {
+    function kdwn_toggle_reset_button_visibility() {
         var totalNotified = parseInt($('#kd-count-notified').text(), 10) || 0;
         var totalFailed = parseInt($('#kd-count-failed').text(), 10) || 0;
         if ($('#kd-reset-status-btn').length) {
@@ -766,7 +766,7 @@ jQuery(document).ready(function($) {
         }
     }
 
-    function kd_update_stats_display(totalOffset, status) {
+    function kdwn_update_stats_display(totalOffset, status) {
         var $allEl = $('.kd-stat-total .kd-stat-number');
         if ($allEl.length) {
             var currentAll = parseInt($allEl.first().text(), 10) || 0;
@@ -787,13 +787,13 @@ jQuery(document).ready(function($) {
             $statusEl.text(Math.max(0, currentVal - 1));
         }
 
-        kd_toggle_reset_button_visibility();
+        kdwn_toggle_reset_button_visibility();
     }
 
     /**
      * Recalculates stats panel after a notification run.
      */
-    function kd_refresh_ui_counters(processedCount, sentCount, failedCount) {
+    function kdwn_refresh_ui_counters(processedCount, sentCount, failedCount) {
         var $subscribedEl = $('#kd-count-subscribed');
         var $notifiedEl = $('#kd-count-notified');
         var $failedEl = $('#kd-count-failed');
@@ -813,7 +813,7 @@ jQuery(document).ready(function($) {
             $failedEl.text(currentFail + failedCount);
         }
 
-        kd_toggle_reset_button_visibility();
+        kdwn_toggle_reset_button_visibility();
     }
 
     // ==========================================
@@ -858,12 +858,12 @@ jQuery(document).ready(function($) {
         $countryError.hide().text('');
 
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_add_custom_country',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_add_custom_country',
+                nonce: kdwn_admin_vars.nonce,
                 country_name: name,
                 country_code: code,
                 service_id: activeServiceId
@@ -908,7 +908,7 @@ jQuery(document).ready(function($) {
     // ==========================================
     $('#kd-service-selector').on('change', function() {
         var serviceId = $(this).val();
-        window.location.href = 'admin.php?page=kd-early-bird&service_id=' + serviceId;
+        window.location.href = 'admin.php?page=khvichadev-waitlist-notify&service_id=' + serviceId;
     });
 
     $('#kd-add-service-trigger-btn').on('click', function(e) {
@@ -942,18 +942,18 @@ jQuery(document).ready(function($) {
         $error.hide().text('');
         
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
             dataType: 'json',
             data: {
-                action: 'kd_add_custom_service',
-                nonce: kd_admin_vars.nonce,
+                action: 'kdwn_add_custom_service',
+                nonce: kdwn_admin_vars.nonce,
                 service_name: name,
                 service_desc: desc
             },
             success: function(response) {
                 if (response && response.success) {
-                    window.location.href = 'admin.php?page=kd-early-bird&service_id=' + response.data.id;
+                    window.location.href = 'admin.php?page=khvichadev-waitlist-notify&service_id=' + response.data.id;
                 } else {
                     var msg = response.data.message || 'Could not create service.';
                     $error.text(msg).fadeIn(150);
@@ -1000,17 +1000,17 @@ jQuery(document).ready(function($) {
             $btn.prop('disabled', true).text('Deleting...');
 
             $.ajax({
-                url: kd_admin_vars.ajax_url,
+                url: kdwn_admin_vars.ajax_url,
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    action: 'kd_delete_custom_service',
-                    nonce: kd_admin_vars.nonce,
+                    action: 'kdwn_delete_custom_service',
+                    nonce: kdwn_admin_vars.nonce,
                     service_id: activeServiceId
                 },
                 success: function(response) {
                     if (response && response.success) {
-                        window.location.href = 'admin.php?page=kd-early-bird&service_id=1';
+                        window.location.href = 'admin.php?page=khvichadev-waitlist-notify&service_id=1';
                     } else {
                         KDNotification.show({
                             type: "error",
@@ -1073,17 +1073,17 @@ jQuery(document).ready(function($) {
         $submitBtn.prop('disabled', true).html('Saving...');
 
         // Serialize all form fields
-        var kd_formData = $form.serializeArray();
+        var kdwn_formData = $form.serializeArray();
 
         // Add additional variables for AJAX call
-        kd_formData.push({ name: 'action', value: 'kd_save_settings' });
-        kd_formData.push({ name: 'nonce', value: kd_admin_vars.nonce });
-        kd_formData.push({ name: 'service_id', value: activeServiceId });
+        kdwn_formData.push({ name: 'action', value: 'kdwn_save_settings' });
+        kdwn_formData.push({ name: 'nonce', value: kdwn_admin_vars.nonce });
+        kdwn_formData.push({ name: 'service_id', value: activeServiceId });
 
         $.ajax({
-            url: kd_admin_vars.ajax_url,
+            url: kdwn_admin_vars.ajax_url,
             type: 'POST',
-            data: kd_formData,
+            data: kdwn_formData,
             dataType: 'json',
             success: function(response) {
                 if (response && response.success) {
@@ -1141,12 +1141,12 @@ jQuery(document).ready(function($) {
             $btn.prop('disabled', true).text('Deleting All...');
 
             $.ajax({
-                url: kd_admin_vars.ajax_url,
+                url: kdwn_admin_vars.ajax_url,
                 type: 'POST',
                 dataType: 'json',
                 data: {
-                    action: 'kd_delete_all_subscribers',
-                    nonce: kd_admin_vars.nonce,
+                    action: 'kdwn_delete_all_subscribers',
+                    nonce: kdwn_admin_vars.nonce,
                     service_id: activeServiceId
                 },
                 success: function(response) {

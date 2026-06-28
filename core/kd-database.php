@@ -1,6 +1,6 @@
 <?php
 /**
- * Database handler class for early bird subscribers.
+ * Database handler class for waitlist subscribers.
  * This class handles database table creation, schema upgrades, and subscriber queries.
  */
 
@@ -8,18 +8,18 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class kd_Database {
+class kdwn_Database {
     /**
      * Get the name of the subscribers table with the WordPress prefix.
      */
-    public static function kd_get_table_name() {
+    public static function kdwn_get_table_name() {
         global $wpdb;
-        return $wpdb->prefix . 'kd_subscribers';
+        return $wpdb->prefix . 'kdwn_subscribers';
     }
 
-    public static function kd_create_table() {
+    public static function kdwn_create_table() {
         global $wpdb;
-        $table_name = self::kd_get_table_name();
+        $table_name = self::kdwn_get_table_name();
         $charset_collate = $wpdb->get_charset_collate();
 
         $table_exists = $wpdb->get_var(
@@ -29,72 +29,72 @@ class kd_Database {
         if ($table_exists) {
             $column_exists = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SHOW COLUMNS FROM {$wpdb->prefix}kd_subscribers LIKE %s",
+                    "SHOW COLUMNS FROM {$wpdb->prefix}kdwn_subscribers LIKE %s",
                     'phone'
                 )
             );
             if (empty($column_exists)) {
                 // phpcs:disable WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers DROP INDEX email" );
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD COLUMN phone varchar(50) DEFAULT '' NOT NULL AFTER email" );
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD COLUMN whatsapp varchar(50) DEFAULT '' NOT NULL AFTER phone" );
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX (email)" );
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX (phone)" );
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX (whatsapp)" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers DROP INDEX email" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD COLUMN phone varchar(50) DEFAULT '' NOT NULL AFTER email" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD COLUMN whatsapp varchar(50) DEFAULT '' NOT NULL AFTER phone" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX (email)" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX (phone)" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX (whatsapp)" );
                 // phpcs:enable
             }
             $service_column_exists = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SHOW COLUMNS FROM {$wpdb->prefix}kd_subscribers LIKE %s",
+                    "SHOW COLUMNS FROM {$wpdb->prefix}kdwn_subscribers LIKE %s",
                     'service_id'
                 )
             );
             if (empty($service_column_exists)) {
                 // phpcs:disable WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD COLUMN service_id bigint(20) DEFAULT 1 NOT NULL AFTER id" );
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX (service_id)" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD COLUMN service_id bigint(20) DEFAULT 1 NOT NULL AFTER id" );
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX (service_id)" );
                 // phpcs:enable
             }
 
             // Check and add composite indexes if they do not exist
             $index_email_exists = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SHOW INDEX FROM {$wpdb->prefix}kd_subscribers WHERE Key_name = %s",
+                    "SHOW INDEX FROM {$wpdb->prefix}kdwn_subscribers WHERE Key_name = %s",
                     'service_email'
                 )
             );
             if (empty($index_email_exists)) {
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX service_email (email, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX service_email (email, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             }
             $index_phone_exists = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SHOW INDEX FROM {$wpdb->prefix}kd_subscribers WHERE Key_name = %s",
+                    "SHOW INDEX FROM {$wpdb->prefix}kdwn_subscribers WHERE Key_name = %s",
                     'service_phone'
                 )
             );
             if (empty($index_phone_exists)) {
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX service_phone (phone, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX service_phone (phone, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             }
             $index_whatsapp_exists = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SHOW INDEX FROM {$wpdb->prefix}kd_subscribers WHERE Key_name = %s",
+                    "SHOW INDEX FROM {$wpdb->prefix}kdwn_subscribers WHERE Key_name = %s",
                     'service_whatsapp'
                 )
             );
             if (empty($index_whatsapp_exists)) {
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX service_whatsapp (whatsapp, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX service_whatsapp (whatsapp, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             }
             $index_status_exists = $wpdb->get_results(
                 $wpdb->prepare(
-                    "SHOW INDEX FROM {$wpdb->prefix}kd_subscribers WHERE Key_name = %s",
+                    "SHOW INDEX FROM {$wpdb->prefix}kdwn_subscribers WHERE Key_name = %s",
                     'service_status'
                 )
             );
             if (empty($index_status_exists)) {
-                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kd_subscribers ADD INDEX service_status (status, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                $wpdb->query( "ALTER TABLE {$wpdb->prefix}kdwn_subscribers ADD INDEX service_status (status, service_id)" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             }
         } else {
-            $sql = "CREATE TABLE {$wpdb->prefix}kd_subscribers (
+            $sql = "CREATE TABLE {$wpdb->prefix}kdwn_subscribers (
                 id bigint(20) NOT NULL AUTO_INCREMENT,
                 service_id bigint(20) DEFAULT 1 NOT NULL,
                 name varchar(100) NOT NULL,
@@ -122,7 +122,7 @@ class kd_Database {
     /**
      * Get the enabled/required configuration settings for form fields.
      */
-    public static function kd_get_fields_config($service_id = 1) {
+    public static function kdwn_get_fields_config($service_id = 1) {
         $default = array(
             'email'                 => array('enabled' => true, 'required' => true),
             'phone'                 => array('enabled' => false, 'required' => false),
@@ -133,15 +133,15 @@ class kd_Database {
         );
 
         if ($service_id > 1) {
-            $option_name = 'kd_eb_fields_config_' . $service_id;
+            $option_name = 'kdwn_fields_config_' . $service_id;
             $value = get_option($option_name, null);
             if ($value !== null && is_array($value)) {
                 $saved = $value;
             } else {
-                $saved = get_option('kd_eb_fields_config', array());
+                $saved = get_option('kdwn_fields_config', array());
             }
         } else {
-            $saved = get_option('kd_eb_fields_config', array());
+            $saved = get_option('kdwn_fields_config', array());
         }
 
         if (!is_array($saved)) {
@@ -160,13 +160,14 @@ class kd_Database {
                 $result[$key] = $saved[$key];
             }
         }
+
         return $result;
     }
 
     /**
      * Get credentials and settings for SMS/WhatsApp API gateways.
      */
-    public static function kd_get_gateway_config($service_id = 1) {
+    public static function kdwn_get_gateway_config($service_id = 1) {
         $default = array(
             'twilio_sid'      => '',
             'twilio_token'    => '',
@@ -177,15 +178,15 @@ class kd_Database {
         );
 
         if ($service_id > 1) {
-            $option_name = 'kd_eb_gateway_config_' . $service_id;
+            $option_name = 'kdwn_gateway_config_' . $service_id;
             $value = get_option($option_name, null);
             if ($value !== null && is_array($value)) {
                 $saved = $value;
             } else {
-                $saved = get_option('kd_eb_gateway_config', array());
+                $saved = get_option('kdwn_gateway_config', array());
             }
         } else {
-            $saved = get_option('kd_eb_gateway_config', array());
+            $saved = get_option('kdwn_gateway_config', array());
         }
 
         if (!is_array($saved)) {
@@ -198,9 +199,9 @@ class kd_Database {
     /**
      * Add a new subscriber to the database.
      */
-    public static function kd_add_subscriber($name, $email = '', $phone = '', $whatsapp = '', $service_id = 1) {
+    public static function kdwn_add_subscriber($name, $email = '', $phone = '', $whatsapp = '', $service_id = 1) {
         global $wpdb;
-        $table_name = self::kd_get_table_name();
+        $table_name = self::kdwn_get_table_name();
 
         return $wpdb->insert(
             $table_name,
@@ -218,7 +219,7 @@ class kd_Database {
     /**
      * Check if a subscriber already exists by email.
      */
-    public static function kd_subscriber_exists($email, $service_id = 1) {
+    public static function kdwn_subscriber_exists($email, $service_id = 1) {
         if (empty($email)) {
             return false;
         }
@@ -227,7 +228,7 @@ class kd_Database {
 
         return $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$wpdb->prefix}kd_subscribers WHERE email = %s AND service_id = %d",
+                "SELECT COUNT(*) FROM {$wpdb->prefix}kdwn_subscribers WHERE email = %s AND service_id = %d",
                 sanitize_email($email),
                 (int) $service_id
             )
@@ -237,7 +238,7 @@ class kd_Database {
     /**
      * Check if a subscriber already exists by phone number.
      */
-    public static function kd_subscriber_exists_by_phone($phone, $service_id = 1) {
+    public static function kdwn_subscriber_exists_by_phone($phone, $service_id = 1) {
         if (empty($phone)) {
             return false;
         }
@@ -246,7 +247,7 @@ class kd_Database {
 
         return $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$wpdb->prefix}kd_subscribers WHERE phone = %s AND service_id = %d",
+                "SELECT COUNT(*) FROM {$wpdb->prefix}kdwn_subscribers WHERE phone = %s AND service_id = %d",
                 sanitize_text_field($phone),
                 (int) $service_id
             )
@@ -256,7 +257,7 @@ class kd_Database {
     /**
      * Check if a subscriber already exists by WhatsApp number.
      */
-    public static function kd_subscriber_exists_by_whatsapp($whatsapp, $service_id = 1) {
+    public static function kdwn_subscriber_exists_by_whatsapp($whatsapp, $service_id = 1) {
         if (empty($whatsapp)) {
             return false;
         }
@@ -265,7 +266,7 @@ class kd_Database {
 
         return $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$wpdb->prefix}kd_subscribers WHERE whatsapp = %s AND service_id = %d",
+                "SELECT COUNT(*) FROM {$wpdb->prefix}kdwn_subscribers WHERE whatsapp = %s AND service_id = %d",
                 sanitize_text_field($whatsapp),
                 (int) $service_id
             )
@@ -275,7 +276,7 @@ class kd_Database {
     /**
      * Get subscribers with filters and offset for pagination/batch operations.
      */
-    public static function kd_get_subscribers($limit = 100, $offset = 0, $search = '', $channel_filter = '', $service_id = 1) {
+    public static function kdwn_get_subscribers($limit = 100, $offset = 0, $search = '', $channel_filter = '', $service_id = 1) {
         global $wpdb;
 
         $search_val = !empty($search) ? $search : '';
@@ -284,7 +285,7 @@ class kd_Database {
 
         return $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$wpdb->prefix}kd_subscribers 
+                "SELECT * FROM {$wpdb->prefix}kdwn_subscribers 
                 WHERE service_id = %d 
                   AND (%s = '' OR (
                       (%s = 'email' AND email != '') OR 
@@ -315,7 +316,7 @@ class kd_Database {
     /**
      * Get total count of subscribers, matching filter criteria.
      */
-    public static function kd_get_subscribers_count($search = '', $channel_filter = '', $service_id = 1) {
+    public static function kdwn_get_subscribers_count($search = '', $channel_filter = '', $service_id = 1) {
         global $wpdb;
 
         $search_val = !empty($search) ? $search : '';
@@ -324,7 +325,7 @@ class kd_Database {
 
         return (int) $wpdb->get_var(
             $wpdb->prepare(
-                "SELECT COUNT(*) FROM {$wpdb->prefix}kd_subscribers 
+                "SELECT COUNT(*) FROM {$wpdb->prefix}kdwn_subscribers 
                 WHERE service_id = %d 
                   AND (%s = '' OR (
                       (%s = 'email' AND email != '') OR 
@@ -351,9 +352,9 @@ class kd_Database {
     /**
      * Delete a subscriber by ID.
      */
-    public static function kd_delete_subscriber($id) {
+    public static function kdwn_delete_subscriber($id) {
         global $wpdb;
-        $table_name = self::kd_get_table_name();
+        $table_name = self::kdwn_get_table_name();
 
         return $wpdb->delete(
             $table_name,
@@ -365,9 +366,9 @@ class kd_Database {
     /**
      * Delete all subscribers for a specific service.
      */
-    public static function kd_delete_all_subscribers($service_id) {
+    public static function kdwn_delete_all_subscribers($service_id) {
         global $wpdb;
-        $table_name = self::kd_get_table_name();
+        $table_name = self::kdwn_get_table_name();
 
         return $wpdb->delete(
             $table_name,
@@ -379,9 +380,9 @@ class kd_Database {
     /**
      * Update subscriber status.
      */
-    public static function kd_update_subscriber_status($id, $status) {
+    public static function kdwn_update_subscriber_status($id, $status) {
         global $wpdb;
-        $table_name = self::kd_get_table_name();
+        $table_name = self::kdwn_get_table_name();
 
         return $wpdb->update(
             $table_name,
@@ -395,7 +396,7 @@ class kd_Database {
     /**
      * Get a list of popular countries and their dialing codes, merged with custom entries.
      */
-    public static function kd_get_countries_list() {
+    public static function kdwn_get_countries_list() {
         $default_countries = array(
             'GE' => array('name' => 'Georgia', 'code' => '+995'),
             'US' => array('name' => 'United States', 'code' => '+1'),
@@ -444,7 +445,7 @@ class kd_Database {
             'AR' => array('name' => 'Argentina', 'code' => '+54'),
         );
 
-        $custom_countries = get_option('kd_eb_custom_countries', array());
+        $custom_countries = get_option('kdwn_custom_countries', array());
         if (is_array($custom_countries) && !empty($custom_countries)) {
             foreach ($custom_countries as $key => $country) {
                 if (isset($country['name']) && isset($country['code'])) {
@@ -462,31 +463,31 @@ class kd_Database {
     /**
      * Get customizable form labels and content texts or their defaults.
      */
-    public static function kd_get_form_texts($service_id = 1) {
+    public static function kdwn_get_form_texts($service_id = 1) {
         $defaults = array(
-            'form_title'        => __('Get Early Access', 'kd-earlybird-notify'),
-            'form_subtitle'     => __('Pre-register now to secure your spot and receive exclusive updates when we launch.', 'kd-earlybird-notify'),
-            'name_label'        => __('Full Name', 'kd-earlybird-notify'),
-            'email_label'       => __('Email Address', 'kd-earlybird-notify'),
-            'phone_label'       => __('Phone Number', 'kd-earlybird-notify'),
-            'whatsapp_label'    => __('WhatsApp Number', 'kd-earlybird-notify'),
-            'submit_btn'        => __('Join Early Bird', 'kd-earlybird-notify'),
-            'success_title'     => __("You're on the list!", 'kd-earlybird-notify'),
-            'success_msg'       => __('Thank you! You have successfully signed up.', 'kd-earlybird-notify'),
-            'social_proof_text' => __('Joined by {count} early birds', 'kd-earlybird-notify'),
-            'badge_label'       => __('Early Birds Joined', 'kd-earlybird-notify'),
-            'consent_label'     => __('I agree to receive launch notifications and updates.', 'kd-earlybird-notify')
+            'form_title'        => __('Get Early Access', 'khvichadev-waitlist-notify'),
+            'form_subtitle'     => __('Pre-register now to secure your spot and receive exclusive updates when we launch.', 'khvichadev-waitlist-notify'),
+            'name_label'        => __('Full Name', 'khvichadev-waitlist-notify'),
+            'email_label'       => __('Email Address', 'khvichadev-waitlist-notify'),
+            'phone_label'       => __('Phone Number', 'khvichadev-waitlist-notify'),
+            'whatsapp_label'    => __('WhatsApp Number', 'khvichadev-waitlist-notify'),
+            'submit_btn'        => __('Join Waitlist', 'khvichadev-waitlist-notify'),
+            'success_title'     => __("You're on the list!", 'khvichadev-waitlist-notify'),
+            'success_msg'       => __('Thank you! You have successfully signed up.', 'khvichadev-waitlist-notify'),
+            'social_proof_text' => __('Joined by {count} subscribers', 'khvichadev-waitlist-notify'),
+            'badge_label'       => __('Subscribers Joined', 'khvichadev-waitlist-notify'),
+            'consent_label'     => __('I agree to receive launch notifications and updates.', 'khvichadev-waitlist-notify')
         );
 
         $saved = null;
         if ($service_id > 1) {
-            $option_name = 'kd_eb_form_texts_' . $service_id;
+            $option_name = 'kdwn_form_texts_' . $service_id;
             $saved = get_option($option_name, null);
             if ($saved === null) {
-                $saved = get_option('kd_eb_form_texts', array());
+                $saved = get_option('kdwn_form_texts', array());
             }
         } else {
-            $saved = get_option('kd_eb_form_texts', array());
+            $saved = get_option('kdwn_form_texts', array());
         }
 
         if (is_array($saved)) {
@@ -499,14 +500,14 @@ class kd_Database {
     /**
      * Retrieve the list of registered services from options.
      */
-    public static function kd_get_services() {
+    public static function kdwn_get_services() {
         $default_item = array(
             'id'          => 1,
-            'name'        => __('Default Service', 'kd-earlybird-notify'),
-            'description' => __('Default subscriber list.', 'kd-earlybird-notify')
+            'name'        => __('Default Service', 'khvichadev-waitlist-notify'),
+            'description' => __('Default subscriber list.', 'khvichadev-waitlist-notify')
         );
 
-        $services = get_option('kd_eb_services', array());
+        $services = get_option('kdwn_services', array());
         if (!is_array($services)) {
             $services = array();
         }
@@ -515,7 +516,7 @@ class kd_Database {
         if (!isset($services[1])) {
             $services[1] = $default_item;
             ksort($services);
-            update_option('kd_eb_services', $services);
+            update_option('kdwn_services', $services);
         }
 
         return $services;
@@ -524,8 +525,8 @@ class kd_Database {
     /**
      * Register a new service.
      */
-    public static function kd_add_service($name, $description = '') {
-        $services = self::kd_get_services();
+    public static function kdwn_add_service($name, $description = '') {
+        $services = self::kdwn_get_services();
         $new_id = 1;
         if (!empty($services)) {
             $new_id = max(array_keys($services)) + 1;
@@ -535,17 +536,17 @@ class kd_Database {
             'name'        => sanitize_text_field($name),
             'description' => sanitize_text_field($description)
         );
-        update_option('kd_eb_services', $services);
+        update_option('kdwn_services', $services);
 
         // Copy settings from service 1 (default service) to the new service
-        $fields_config_1 = self::kd_get_fields_config(1);
-        update_option('kd_eb_fields_config_' . $new_id, $fields_config_1);
+        $fields_config_1 = self::kdwn_get_fields_config(1);
+        update_option('kdwn_fields_config_' . $new_id, $fields_config_1);
 
-        $gateway_config_1 = self::kd_get_gateway_config(1);
-        update_option('kd_eb_gateway_config_' . $new_id, $gateway_config_1);
+        $gateway_config_1 = self::kdwn_get_gateway_config(1);
+        update_option('kdwn_gateway_config_' . $new_id, $gateway_config_1);
 
-        $form_texts_1 = self::kd_get_form_texts(1);
-        update_option('kd_eb_form_texts_' . $new_id, $form_texts_1);
+        $form_texts_1 = self::kdwn_get_form_texts(1);
+        update_option('kdwn_form_texts_' . $new_id, $form_texts_1);
 
         return $services[$new_id];
     }
@@ -553,7 +554,7 @@ class kd_Database {
     /**
      * Delete a service, its configurations and all associated subscribers.
      */
-    public static function kd_delete_service($service_id) {
+    public static function kdwn_delete_service($service_id) {
         $service_id = (int) $service_id;
 
         // Prevent deleting the default service (ID 1)
@@ -561,20 +562,20 @@ class kd_Database {
             return false;
         }
 
-        $services = self::kd_get_services();
+        $services = self::kdwn_get_services();
         if (isset($services[$service_id])) {
             unset($services[$service_id]);
-            update_option('kd_eb_services', $services);
+            update_option('kdwn_services', $services);
 
             // Delete service-specific settings options
-            delete_option('kd_eb_fields_config_' . $service_id);
-            delete_option('kd_eb_gateway_config_' . $service_id);
-            delete_option('kd_eb_form_texts_' . $service_id);
+            delete_option('kdwn_fields_config_' . $service_id);
+            delete_option('kdwn_gateway_config_' . $service_id);
+            delete_option('kdwn_form_texts_' . $service_id);
 
             // Delete associated subscribers from database
             global $wpdb;
             $wpdb->delete(
-                "{$wpdb->prefix}kd_subscribers",
+                "{$wpdb->prefix}kdwn_subscribers",
                 array('service_id' => $service_id),
                 array('%d')
             );

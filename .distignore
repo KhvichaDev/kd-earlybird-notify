@@ -1,0 +1,9 @@
+.git
+.github
+.gitignore
+.distignore
+ADR.md
+BUSINESS_LOG.md
+WORK_LOG.md
+TROUBLESHOOTING.md
+README.md

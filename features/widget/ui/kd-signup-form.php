@@ -9,62 +9,62 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-class kd_Signup_Form {
+class kdwn_Signup_Form {
     /**
      * Set up hooks for shortcode registration and script enqueuing.
      */
     public function __construct() {
-        add_shortcode('kd_early_bird_signup', array($this, 'kd_render_signup_form'));
-        add_shortcode('kd_early_bird_subscriber_count', array($this, 'kd_render_subscriber_count'));
-        add_action('wp_enqueue_scripts', array($this, 'kd_enqueue_signup_assets'));
+        add_shortcode('kdwn_signup', array($this, 'kdwn_render_signup_form'));
+        add_shortcode('kdwn_subscriber_count', array($this, 'kdwn_render_subscriber_count'));
+        add_action('wp_enqueue_scripts', array($this, 'kdwn_enqueue_signup_assets'));
     }
 
     /**
      * Enqueue CSS and JS assets for the signup form.
      */
-    public function kd_enqueue_signup_assets() {
+    public function kdwn_enqueue_signup_assets() {
         // Enqueue Google Font - Outfit
         wp_enqueue_style(
-            'kd-outfit-font',
+            'kdwn-outfit-font',
             'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap',
             array(),
-            KD_EB_VERSION
+            KDWN_VERSION
         );
 
         // Enqueue local signup form styles
         wp_enqueue_style(
-            'kd-signup-styles',
-            KD_EB_URL . 'features/widget/ui/kd-signup-form.css',
-            array('kd-outfit-font'),
-            KD_EB_VERSION
+            'kdwn-signup-styles',
+            KDWN_URL . 'features/widget/ui/kd-signup-form.css',
+            array('kdwn-outfit-font'),
+            KDWN_VERSION
         );
 
         // Enqueue local signup form behavior script
         wp_enqueue_script(
-            'kd-signup-script',
-            KD_EB_URL . 'features/widget/ui/kd-signup-form.js',
+            'kdwn-signup-script',
+            KDWN_URL . 'features/widget/ui/kd-signup-form.js',
             array('jquery'),
-            KD_EB_VERSION,
+            KDWN_VERSION,
             true
         );
 
         // Localize AJAX parameters for the script
-        wp_localize_script('kd-signup-script', 'kd_eb_vars', array(
+        wp_localize_script('kdwn-signup-script', 'kdwn_vars', array(
             'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce'    => wp_create_nonce('kd_signup_nonce')
+            'nonce'    => wp_create_nonce('kdwn_signup_nonce')
         ));
     }
 
     /**
-     * Render the early bird signup form based on active fields configurations.
+     * Render the signup form based on active fields configurations.
      */
-    public function kd_render_signup_form($atts = array()) {
+    public function kdwn_render_signup_form($atts = array()) {
         // Parse attributes
         $atts = shortcode_atts(array(
             'service' => '1',
-        ), $atts, 'kd_early_bird_signup');
+        ), $atts, 'kdwn_signup');
 
-        $services = kd_Database::kd_get_services();
+        $services = kdwn_Database::kdwn_get_services();
         $service_id = 1;
 
         if (is_numeric($atts['service'])) {
@@ -83,8 +83,8 @@ class kd_Signup_Form {
         }
 
         // Retrieve custom form field configuration
-        $fields_config = kd_Database::kd_get_fields_config($service_id);
-        $form_texts    = kd_Database::kd_get_form_texts($service_id);
+        $fields_config = kdwn_Database::kdwn_get_fields_config($service_id);
+        $form_texts    = kdwn_Database::kdwn_get_form_texts($service_id);
 
         $email_enabled   = isset($fields_config['email']['enabled']) ? (bool) $fields_config['email']['enabled'] : true;
         $email_required  = isset($fields_config['email']['required']) ? (bool) $fields_config['email']['required'] : true;
@@ -101,7 +101,7 @@ class kd_Signup_Form {
         // Count how many fields are enabled to make sure we render something
         $any_enabled = $email_enabled || $phone_enabled || $whatsapp_enabled;
 
-        $countries = kd_Database::kd_get_countries_list();
+        $countries = kdwn_Database::kdwn_get_countries_list();
         $default_code = isset($fields_config['default_country_code']) ? $fields_config['default_country_code'] : '+995';
 
         ob_start();
@@ -114,8 +114,8 @@ class kd_Signup_Form {
                         <h3 class="kd-signup-title"><?php echo esc_html($form_texts['form_title']); ?></h3>
                         <p class="kd-signup-subtitle"><?php echo esc_html($form_texts['form_subtitle']); ?></p>
                         <?php if ($show_subscriber_count) : 
-                            $subscriber_count = (int) kd_Database::kd_get_subscribers_count('', '', $service_id);
-                            $social_proof_raw = isset($form_texts['social_proof_text']) ? $form_texts['social_proof_text'] : __('Joined by {count} early birds', 'kd-earlybird-notify');
+                            $subscriber_count = (int) kdwn_Database::kdwn_get_subscribers_count('', '', $service_id);
+                            $social_proof_raw = isset($form_texts['social_proof_text']) ? $form_texts['social_proof_text'] : __('Joined by {count} subscribers', 'khvichadev-waitlist-notify');
                             $count_html = '<strong class="kd-social-count">' . number_format($subscriber_count) . '</strong>';
                             $social_proof_html = str_replace('{count}', $count_html, esc_html($social_proof_raw));
                             ?>
@@ -143,22 +143,22 @@ class kd_Signup_Form {
                                     );
                                     ?>
                                 </span>
-                            </div>
+                             </div>
                         <?php endif; ?>
                     </div>
                     
                     <?php if (!$any_enabled) : ?>
                         <div class="kd-message kd-error">
-                            <span><?php esc_html_e('Warning: No signup fields have been configured by the admin yet.', 'kd-earlybird-notify'); ?></span>
+                            <span><?php esc_html_e('Warning: No signup fields have been configured by the admin yet.', 'khvichadev-waitlist-notify'); ?></span>
                         </div>
                     <?php else : ?>
                         <form class="kd-signup-form">
-                            <input type="hidden" name="kd_service_id" value="<?php echo (int) $service_id; ?>" />
+                            <input type="hidden" name="kdwn_service_id" value="<?php echo (int) $service_id; ?>" />
                             
                             <!-- Honeypot field for spam bot protection -->
                             <div class="kd-hp-field" style="display:none !important; visibility:hidden !important; width:0 !important; height:0 !important; overflow:hidden !important;" aria-hidden="true">
-                                <label><?php esc_html_e('Confirm Email Address', 'kd-earlybird-notify'); ?></label>
-                                <input type="text" name="kd_hp_email" class="kd-hp-email" autocomplete="off" tabindex="-1" />
+                                <label><?php esc_html_e('Confirm Email Address', 'khvichadev-waitlist-notify'); ?></label>
+                                <input type="text" name="kdwn_hp_email" class="kd-hp-email" autocomplete="off" tabindex="-1" />
                             </div>
 
                             <!-- Name is always required -->
@@ -207,8 +207,8 @@ class kd_Signup_Form {
 
                             <?php if ($consent_enabled) : ?>
                                 <div class="kd-consent-group">
-                                    <input type="checkbox" name="kd_notification_consent" id="kd_notification_consent" class="kd-consent-checkbox" value="1" required />
-                                    <label for="kd_notification_consent" class="kd-consent-label">
+                                    <input type="checkbox" name="kdwn_notification_consent" id="kdwn_notification_consent" class="kd-consent-checkbox" value="1" required />
+                                    <label for="kdwn_notification_consent" class="kd-consent-label">
                                         <?php echo esc_html($form_texts['consent_label']); ?> <span class="kd-consent-required">*</span>
                                     </label>
                                 </div>
@@ -244,15 +244,15 @@ class kd_Signup_Form {
     /**
      * Render the subscriber count for a specific service.
      */
-    public function kd_render_subscriber_count($atts = array()) {
+    public function kdwn_render_subscriber_count($atts = array()) {
         // Parse attributes
         $atts = shortcode_atts(array(
             'service' => '1',
             'format'  => 'badge',
             'label'   => '',
-        ), $atts, 'kd_early_bird_subscriber_count');
+        ), $atts, 'kdwn_subscriber_count');
 
-        $services = kd_Database::kd_get_services();
+        $services = kdwn_Database::kdwn_get_services();
         $service_id = 1;
 
         if (is_numeric($atts['service'])) {
@@ -270,14 +270,14 @@ class kd_Signup_Form {
             }
         }
 
-        $subscriber_count = (int) kd_Database::kd_get_subscribers_count('', '', $service_id);
+        $subscriber_count = (int) kdwn_Database::kdwn_get_subscribers_count('', '', $service_id);
 
         if ($atts['format'] === 'raw') {
-            return $subscriber_count;
+            return absint($subscriber_count);
         }
 
-        $form_texts = kd_Database::kd_get_form_texts($service_id);
-        $label = !empty($atts['label']) ? $atts['label'] : (isset($form_texts['badge_label']) ? $form_texts['badge_label'] : __('Early Birds Joined', 'kd-earlybird-notify'));
+        $form_texts = kdwn_Database::kdwn_get_form_texts($service_id);
+        $label = !empty($atts['label']) ? $atts['label'] : (isset($form_texts['badge_label']) ? $form_texts['badge_label'] : __('Subscribers Joined', 'khvichadev-waitlist-notify'));
 
         ob_start();
         ?>
@@ -288,7 +288,7 @@ class kd_Signup_Form {
                 <span class="kd-badge-pulse-dot"></span>
             </div>
             <div class="kd-badge-text-container">
-                <span class="kd-badge-number"><?php echo number_format($subscriber_count); ?></span>
+                <span class="kd-badge-number"><?php echo esc_html(number_format($subscriber_count)); ?></span>
                 <span class="kd-badge-label"><?php echo esc_html($label); ?></span>
             </div>
         </div>

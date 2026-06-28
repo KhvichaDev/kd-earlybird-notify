@@ -1,12 +1,12 @@
 /**
- * Stylesheet for the KD Early Bird Notify Admin Dashboard.
+ * Stylesheet for the KhvichaDev - Waitlist & Notify Admin Dashboard.
  * Implements a modern SaaS-style premium dark UI nested within WordPress.
  * Features dark glassmorphic cards, custom statistics glows, responsive tables,
  * custom form inputs, modal overlays, and hover micro-animations.
  */
 
 /* Override WordPress default light backgrounds on this page only */
-body.toplevel_page_kd-early-bird,
+body.toplevel_page_khvichadev-waitlist-notify,
 #wpwrap,
 #wpcontent,
 #wpbody,
@@ -16,7 +16,7 @@ body.toplevel_page_kd-early-bird,
 }
 
 /* Fix WordPress admin footer overlaying page content */
-body.toplevel_page_kd-early-bird #wpfooter {
+body.toplevel_page_khvichadev-waitlist-notify #wpfooter {
     position: relative !important;
     clear: both !important;
     margin-top: 60px !important;
@@ -24,7 +24,7 @@ body.toplevel_page_kd-early-bird #wpfooter {
     color: #64748b !important;
 }
 
-body.toplevel_page_kd-early-bird #wpfooter a {
+body.toplevel_page_khvichadev-waitlist-notify #wpfooter a {
     color: #818cf8 !important;
 }
 
@@ -239,14 +239,14 @@ body.toplevel_page_kd-early-bird #wpfooter a {
 /* Tab Content animations */
 .kd-tab-content {
     display: none;
-    animation: kd_tab_fade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: kdwn_tab_fade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .kd-tab-content-active {
     display: block;
 }
 
-@keyframes kd_tab_fade {
+@keyframes kdwn_tab_fade {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
 }
@@ -966,7 +966,7 @@ select.kd-admin-select {
     gap: 12px !important;
     font-size: 0.95rem !important;
     font-weight: 500 !important;
-    animation: kd_tab_fade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: kdwn_tab_fade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .kd-notice-success {
